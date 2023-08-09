@@ -116,7 +116,6 @@ const contractAddress = "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2";
 
 const contractABI = abi.abi
 const contract = new web3.eth.Contract(contractABI, contractAddress);
-contract.methods
    const check = async () =>
    { 
     const events = await contract.getPastEvents("Borrow", {
@@ -157,13 +156,16 @@ contract.methods
      */
     console.log(addresses)
     console.log(data)
-    set
-    
+    return imp;
 }
 
 app.get('/', async (req, res) => {
-    await check()
   res.json({"addresses":addresses})
+})
+
+app.get('/check', async (req,res)=>{
+  check();
+  res.send("Started");
 })
 app.get('/data', (req,res)=>{
     res.json({data})
@@ -173,8 +175,8 @@ app.get('/useful',(req,res)=>{
     res.json({useful})
 })
 app.get('/userSummary',async (req,res)=>{
-await  fetchContractData("0x4ebDE1e8ad8E205D4De268ba758e5725EaFBC6fD")
-  res.send("hi")
+const data = await fetchContractData(req.body.address)
+  res.json({data})
 })
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
