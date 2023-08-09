@@ -113,19 +113,14 @@ const contractAddress = "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2";
 
 const contractABI = abi.abi;
 const contract = new web3.eth.Contract(contractABI, contractAddress);
-// Helper function to save data to a JSON file
 function saveDataToFile(filename, content) {
   fs.writeFileSync(filename, JSON.stringify(content, null, 2), "utf-8");
 }
-
-// Helper function to append data to an existing JSON file
-// Helper function to update the JSON file
 
 function updateJSONFile(filename, address, content) {
   try {
     let existingData = {};
 
-    // Check if the file exists and read its content
     if (fs.existsSync(filename)) {
       const rawData = fs.readFileSync(filename, "utf-8");
       try {
@@ -137,10 +132,8 @@ function updateJSONFile(filename, address, content) {
       }
     }
 
-    // Update the content for the given address
     existingData[address] = content;
 
-    // Write the updated data back to the file
     fs.writeFileSync(filename, JSON.stringify(existingData, null, 2), "utf-8");
   } catch (error) {
     console.error(
@@ -186,11 +179,8 @@ const check = async () => {
 
       useful.push(usefulEntry);
 
-      // Update the useful data in the file
       updateJSONFile("./useful.json", address, usefulEntry);
     }
-
-    // Update the user data in the file
 
     updateJSONFile("./userData.json", userEntry);
 
@@ -201,7 +191,7 @@ const check = async () => {
 
 const usefulupdate = async () => {
   const usefulAddresses = UF;
-  const addresses = Object.keys(usefulAddresses); // Get all the addresses from the loaded dat
+  const addresses = Object.keys(usefulAddresses);
   console.log(addresses);
 
   for (const address of addresses) {
@@ -260,11 +250,9 @@ app.get("/data", (req, res) => {
   res.status(200).json({ data: data });
 });
 app.get("/updateUseful", async (req, res) => {
-  // Immediately read the contents of useful.json and send as a response
   const fileContents = UF;
   res.send(fileContents);
 
-  // Run the update in the background without awaiting it
   usefulupdate().catch((error) => {
     console.error("Error updating useful data:", error);
   });
