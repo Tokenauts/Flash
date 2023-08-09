@@ -92,9 +92,7 @@ async function fetchContractData(currentAccount) {
     formattedReserves: formattedPoolReserves,
     userEmodeCategoryId: userReserves.userEmodeCategoryId,
   });
-  const imp = userSummary.userReservesData.filter(
-    (data) => data.stableBorrowsUSD + data.variableBorrowsUSD > 0
-  );
+  const imp = userSummary.userReservesData;
   imp.forEach((im) => {
     delete im.reserve;
   });
