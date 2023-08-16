@@ -168,7 +168,7 @@ const check = async (startAddress = 0) => {
         healthFactor: web3.utils.fromWei(userData.healthFactor, "ether"),
       };
 
-      console.log(userEntry);
+      console.log(i, addressesFromFile.length);
       data.push(userEntry);
       updateJSONFile("./userData.json", address, userEntry);
     } catch (error) {
@@ -186,6 +186,27 @@ const check = async (startAddress = 0) => {
     // await new Promise((resolve) => setTimeout(resolve, 3000));
   }
 };
+const updateAllData = async () => {
+  await check();
+  await rewriteWatchlist();
+  await updateUsefulData();
+};
+
+updateAllData();
+
+setInterval(() => {
+  updateAllData();
+}, 24 * 60 * 60 * 1000); // 24 hours
+
+setInterval(() => {
+  check()
+    .then(() => {
+      return updateWatchlistData();
+    })
+    .then(() => {
+      return updateUsefulData();
+    });
+}, 4 * 60 * 60 * 1000); // 4 hours
 
 const usefulupdate = async () => {
   const usefulAddresses = UF;
@@ -218,7 +239,7 @@ const usefulupdate = async () => {
   }
 };
 
-const updateAddressData = async () => {
+const rewriteWatchlist = async () => {
   const userData = UD;
   let watchlist = {};
   for (const address in userData) {
@@ -368,3 +389,4 @@ app.get("/userSummary", async (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+module.exports = app;
