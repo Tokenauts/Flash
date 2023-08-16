@@ -12,15 +12,16 @@ import dayjs from "dayjs";
 import express from "express";
 import cors from "cors";
 import fs from "fs";
-import path from "path";
+import path, { parse } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import AD from "./addresses.json" assert { type: "json" };
 import UF from "./useful.json" assert { type: "json" };
 import UD from "./userData.json" assert { type: "json" };
+import WL from "./watchlist.json" assert { type: "json" };
 
 const app = express();
-const port = 3009;
+const port = 3006;
 app.use(cors());
 const provider = new ethers.providers.JsonRpcProvider(
   "https://eth-mainnet.public.blastapi.io"
@@ -141,49 +142,48 @@ function updateJSONFile(filename, address, content) {
   }
 }
 
-const check = async () => {
+const check = async (startAddress = 0) => {
   const addressesFromFile = AD;
-  console.log("Loaded addresses from file:", addressesFromFile);
+  const retryInterval = 60000; // 1 minute in milliseconds
 
-  for (const address of addressesFromFile) {
-    const userData = await contract.methods.getUserAccountData(address).call();
+  for (let i = startAddress; i < addressesFromFile.length; i++) {
+    const address = addressesFromFile[i];
 
-    const userEntry = {
-      address: address,
-      collateral:
-        web3.utils.fromWei(userData.totalCollateralBase, "wei") / 10 ** 8,
-      debt: web3.utils.fromWei(userData.totalDebtBase, "wei") / 10 ** 8,
-      borrow:
-        web3.utils.fromWei(userData.availableBorrowsBase, "wei") / 10 ** 8,
-      threshold:
-        web3.utils.fromWei(userData.currentLiquidationThreshold, "wei") /
-        10 ** 2,
-      ltv: web3.utils.fromWei(userData.ltv, "wei") / 10 ** 2,
-      healthFactor: web3.utils.fromWei(userData.healthFactor, "ether"),
-    };
-    data.push(userEntry);
-    updateJSONFile("./userData.json", address, userEntry);
+    try {
+      const userData = await contract.methods
+        .getUserAccountData(address)
+        .call();
 
-    const collateralUSDValue =
-      web3.utils.fromWei(userData.totalCollateralBase, "wei") / 10 ** 8;
-    if (
-      web3.utils.fromWei(userData.healthFactor, "ether") < 1.1 &&
-      collateralUSDValue > 2000
-    ) {
-      const usefulEntry = {
-        ...userEntry,
-        collateral: collateralUSDValue,
+      const userEntry = {
+        address: address,
+        collateral:
+          web3.utils.fromWei(userData.totalCollateralBase, "wei") / 10 ** 8,
+        debt: web3.utils.fromWei(userData.totalDebtBase, "wei") / 10 ** 8,
+        borrow:
+          web3.utils.fromWei(userData.availableBorrowsBase, "wei") / 10 ** 8,
+        threshold:
+          web3.utils.fromWei(userData.currentLiquidationThreshold, "wei") /
+          10 ** 2,
+        ltv: web3.utils.fromWei(userData.ltv, "wei") / 10 ** 2,
+        healthFactor: web3.utils.fromWei(userData.healthFactor, "ether"),
       };
 
-      useful.push(usefulEntry);
+      console.log(userEntry);
+      data.push(userEntry);
+      updateJSONFile("./userData.json", address, userEntry);
+    } catch (error) {
+      console.error(`Error updating data for address ${address}:`, error);
 
-      updateJSONFile("./useful.json", address, usefulEntry);
+      // Wait for 1 minute and retry the same address
+      console.log(
+        `Waiting for ${retryInterval / 1000} seconds before retrying...`
+      );
+      await new Promise((resolve) => setTimeout(resolve, retryInterval));
+      i--; // Decrement index to retry the same address
     }
 
-    updateJSONFile("./userData.json", userEntry);
-
-    console.log(userEntry);
-    setTimeout(() => {}, 3000);
+    // Optional: You can keep the existing delay here if needed
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
   }
 };
 
@@ -197,7 +197,21 @@ const usefulupdate = async () => {
       const usefuldata = await contract.methods
         .getUserAccountData(address)
         .call();
-      updateJSONFile("./userData.json", usefuldata);
+      const useful = {
+        address: address,
+        collateral:
+          web3.utils.fromWei(usefuldata.totalCollateralBase, "wei") / 10 ** 8,
+        debt: web3.utils.fromWei(usefuldata.totalDebtBase, "wei") / 10 ** 8,
+        borrow:
+          web3.utils.fromWei(usefuldata.availableBorrowsBase, "wei") / 10 ** 8,
+        threshold:
+          web3.utils.fromWei(usefuldata.currentLiquidationThreshold, "wei") /
+          10 ** 2,
+        ltv: web3.utils.fromWei(usefuldata.ltv, "wei") / 10 ** 2,
+        healthFactor: web3.utils.fromWei(usefuldata.healthFactor, "ether"),
+      };
+      console.log(useful);
+      updateJSONFile("./useful.json", address, useful);
     } catch (error) {
       console.error(`Error fetching data for address ${address}:`, error);
     }
@@ -210,13 +224,19 @@ const updateAddressData = async () => {
   for (const address in userData) {
     if (
       userData.hasOwnProperty(address) &&
-      parseFloat(userData[address].healthFactor) < 2
+      parseFloat(userData[address].healthFactor) < 2 &&
+      parseFloat(userData[address].collateral) > 2000
     ) {
       watchlist[address] = userData[address];
     }
   }
 
-  // 3. Write this filtered data to watchlist.json
+  // Check if watchlist.json exists and delete it
+  if (fs.existsSync("./watchlist.json")) {
+    fs.unlinkSync("./watchlist.json");
+  }
+
+  // Write the new data to watchlist.json
   fs.writeFileSync(
     "./watchlist.json",
     JSON.stringify(watchlist, null, 2),
@@ -225,12 +245,87 @@ const updateAddressData = async () => {
   console.log("Watchlist updated successfully!");
 };
 
-// Later, when you want to update the watchlist
+const updateWatchlistData = async () => {
+  // 1. Read the addresses from watchlist.json
+  const watchlistData = WL;
+
+  // 2. Fetch user account data for each address using the contract method
+  for (const address in watchlistData) {
+    if (watchlistData.hasOwnProperty(address)) {
+      try {
+        const userData = await contract.methods
+          .getUserAccountData(address)
+          .call();
+
+        const updatedData = {
+          address: address,
+          collateral:
+            web3.utils.fromWei(userData.totalCollateralBase, "wei") / 10 ** 8,
+          debt: web3.utils.fromWei(userData.totalDebtBase, "wei") / 10 ** 8,
+          borrow:
+            web3.utils.fromWei(userData.availableBorrowsBase, "wei") / 10 ** 8,
+          threshold:
+            web3.utils.fromWei(userData.currentLiquidationThreshold, "wei") /
+            10 ** 2,
+          ltv: web3.utils.fromWei(userData.ltv, "wei") / 10 ** 2,
+          healthFactor: web3.utils.fromWei(userData.healthFactor, "ether"),
+        };
+        console.log(updatedData);
+        // Update watchlist data with new data
+        updateJSONFile("./watchlist.json", address, updatedData);
+      } catch (error) {
+        console.error(`Error fetching data for address ${address}:`, error);
+      }
+    }
+  }
+};
+
+const updateUsefulData = async () => {
+  // 1. Read the addresses and data from watchlist.json
+  const watchlistData = WL;
+
+  // 2. Filter addresses that have health factor < 1.1
+  let usefulData = {};
+  for (const address in watchlistData) {
+    if (
+      watchlistData.hasOwnProperty(address) &&
+      parseFloat(watchlistData[address].healthFactor) < 1.1
+    ) {
+      usefulData[address] = watchlistData[address];
+    }
+  }
+
+  // 3. Delete the existing useful.json (if it exists)
+  if (fs.existsSync("./useful.json")) {
+    fs.unlinkSync("./useful.json");
+  }
+
+  // 4. Write the new data to useful.json
+  fs.writeFileSync(
+    "./useful.json",
+    JSON.stringify(usefulData, null, 2),
+    "utf-8"
+  );
+  console.log("useful.json updated successfully!");
+};
+
+// Endpoint to trigger the update
+app.get("/updateUsefulData", async (req, res) => {
+  try {
+    await updateUsefulData();
+    res.status(200).send("useful.json updated successfully!");
+  } catch (error) {
+    console.error("Error updating useful.json:", error);
+    res.status(500).send("Failed to update useful.json");
+  }
+});
+
+// Add an endpoint to trigger this update
 
 app.get("/", async (req, res) => {
   res.json({ addresses: addresses });
 });
-app.get("/updateWatchlist", async (req, res) => {
+app.get("/rewatchlist", async (req, res) => {
   try {
     await updateAddressData();
     res.status(200).send("Watchlist updated successfully!");
@@ -239,14 +334,21 @@ app.get("/updateWatchlist", async (req, res) => {
     res.status(500).send("Failed to update watchlist");
   }
 });
+app.get("/updateWatchlist", async (req, res) => {
+  try {
+    await updateWatchlistData();
+    res.status(200).send("Watchlist data updated successfully!");
+  } catch (error) {
+    console.error("Error updating watchlist data:", error);
+    res.status(500).send("Failed to update watchlist data");
+  }
+});
 
 app.get("/check", async (req, res) => {
   check();
   res.send("Started");
 });
-app.get("/data", (req, res) => {
-  res.status(200).json({ data: data });
-});
+
 app.get("/updateUseful", async (req, res) => {
   const fileContents = UF;
   res.send(fileContents);
@@ -256,9 +358,6 @@ app.get("/updateUseful", async (req, res) => {
   });
 });
 
-app.get("/useful", (req, res) => {
-  res.status(200).json({ useful });
-});
 app.get("/userSummary", async (req, res) => {
   if (!req.query.address) {
     return res.status(400).send("Address is required");
