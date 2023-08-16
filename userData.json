@@ -34696,21 +34696,21 @@
   },
   "0xCdEF05257f551F69F7Af6F6f85e56fE3F17718D0": {
     "address": "0xCdEF05257f551F69F7Af6F6f85e56fE3F17718D0",
-    "collateral": 600358.53150711,
-    "debt": 280034.85465715,
-    "borrow": 121424.89536165,
-    "threshold": 73.94,
-    "ltv": 66.87,
-    "healthFactor": "1.585178026284757611"
+    "collateral": 591892.72950023,
+    "debt": 280109.64929439,
+    "borrow": 115748.20819536,
+    "threshold": 73.95,
+    "ltv": 66.88,
+    "healthFactor": "1.562619047819379398"
   },
   "0x956A67229D9C67404dC98E8352A0F4389f1eD842": {
     "address": "0x956A67229D9C67404dC98E8352A0F4389f1eD842",
-    "collateral": 926.41867422,
-    "debt": 464.61585383,
-    "borrow": 281.15117892,
+    "collateral": 913.71478273,
+    "debt": 239.69299219,
+    "borrow": 495.84740791,
     "threshold": 83,
     "ltv": 80.5,
-    "healthFactor": "1.654974735066500131"
+    "healthFactor": "3.163977647994165165"
   },
   "0xeB2993A4E44291DA4020102F6D2ed8D14b1Cca4c": {
     "address": "0xeB2993A4E44291DA4020102F6D2ed8D14b1Cca4c",
