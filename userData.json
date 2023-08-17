@@ -26722,21 +26722,21 @@
   },
   "0x78F4df1965Ce480BfD7b77E93eD18C61dc3BE716": {
     "address": "0x78F4df1965Ce480BfD7b77E93eD18C61dc3BE716",
-    "collateral": 31764.23999329,
-    "debt": 12146.62537917,
-    "borrow": 9770.7002162,
+    "collateral": 31399.33100149,
+    "debt": 12149.88507137,
+    "borrow": 9515.65331966,
     "threshold": 80,
     "ltv": 69,
-    "healthFactor": "2.09205365287773488"
+    "healthFactor": "2.067465219105778146"
   },
   "0x86c92d359f5e306B0DaD6225084c6d9C03604aCd": {
     "address": "0x86c92d359f5e306B0DaD6225084c6d9C03604aCd",
-    "collateral": 164718.24202308,
-    "debt": 90875.28061972,
-    "borrow": 41722.90420886,
+    "collateral": 162814.46756308,
+    "debt": 90899.66939033,
+    "borrow": 40165.97699795,
     "threshold": 83,
     "ltv": 80.5,
-    "healthFactor": "1.504437069650077108"
+    "healthFactor": "1.486650160377105916"
   },
   "0x7FE4b2632f5AE6d930677D662AF26Bc0a06672b3": {
     "address": "0x7FE4b2632f5AE6d930677D662AF26Bc0a06672b3",
@@ -26749,12 +26749,12 @@
   },
   "0x662768ed9484d69Ce519Fbd96D580149A9964f23": {
     "address": "0x662768ed9484d69Ce519Fbd96D580149A9964f23",
-    "collateral": 92598.22682289,
-    "debt": 60900.96340474,
-    "borrow": 13640.60918769,
+    "collateral": 91527.99843105,
+    "debt": 60923.34922434,
+    "borrow": 12756.68951266,
     "threshold": 83,
     "ltv": 80.5,
-    "healthFactor": "1.261991994317419254"
+    "healthFactor": "1.246947839621057629"
   },
   "0x34C9d6229DE541E2Fa77E60835f5106D5842BBb3": {
     "address": "0x34C9d6229DE541E2Fa77E60835f5106D5842BBb3",
@@ -26776,30 +26776,30 @@
   },
   "0x3cD361345Df2A61d2fa0e2D1692da4404f1a4A11": {
     "address": "0x3cD361345Df2A61d2fa0e2D1692da4404f1a4A11",
-    "collateral": 1651785.78009889,
-    "debt": 684313.70965643,
-    "borrow": 435762.22782863,
-    "threshold": 78.72,
-    "ltv": 67.81,
-    "healthFactor": "1.900131106165735075"
+    "collateral": 1631270.37369917,
+    "debt": 684776.45686707,
+    "borrow": 421551.11057571,
+    "threshold": 78.73,
+    "ltv": 67.82,
+    "healthFactor": "1.875501344028640274"
   },
   "0x2C6ED140617D76dfc5bb7AB52BE0594D6bc682e3": {
     "address": "0x2C6ED140617D76dfc5bb7AB52BE0594D6bc682e3",
-    "collateral": 181635.3536672,
-    "debt": 92031.68062014,
-    "borrow": 47827.5417036,
+    "collateral": 181668.40081892,
+    "debt": 92077.92551834,
+    "borrow": 47806.74311223,
     "threshold": 80,
     "ltv": 77,
-    "healthFactor": "1.578894158561753697"
+    "healthFactor": "1.578388303570027308"
   },
   "0xDe445EAd0AA9F95302f101De99EA36915cD613c9": {
     "address": "0xDe445EAd0AA9F95302f101De99EA36915cD613c9",
-    "collateral": 70731.30171763,
-    "debt": 20275.45608163,
-    "borrow": 31358.39417224,
+    "collateral": 69565.57797331,
+    "debt": 20279.54413555,
+    "borrow": 30503.32778497,
     "threshold": 78,
     "ltv": 73,
-    "healthFactor": "2.721044356172859896"
+    "healthFactor": "2.675659297689059586"
   },
   "0x1e55e17fD7cEd07f17a0a7eD3E02170B2fc2863a": {
     "address": "0x1e55e17fD7cEd07f17a0a7eD3E02170B2fc2863a",
@@ -26812,12 +26812,12 @@
   },
   "0xfB82bFa7d9De257FEaAB909CE554da5eA169F840": {
     "address": "0xfB82bFa7d9De257FEaAB909CE554da5eA169F840",
-    "collateral": 133649.06220901,
-    "debt": 64908.95197419,
-    "borrow": 42678.54310406,
+    "collateral": 132104.37726427,
+    "debt": 64922.03843492,
+    "borrow": 41421.98526282,
     "threshold": 83,
     "ltv": 80.5,
-    "healthFactor": "1.708989565531562129"
+    "healthFactor": "1.688896956605165963"
   },
   "0x24Baa97DF2dB7D7586A919f157dcacbB2e720Ac7": {
     "address": "0x24Baa97DF2dB7D7586A919f157dcacbB2e720Ac7",
@@ -26848,12 +26848,12 @@
   },
   "0x48F497dcaDfBfE92fc70a50859E13C666b87978F": {
     "address": "0x48F497dcaDfBfE92fc70a50859E13C666b87978F",
-    "collateral": 9432.79378941,
-    "debt": 4393.42147454,
-    "borrow": 2869.82974331,
+    "collateral": 9434.50971928,
+    "debt": 4321.12251393,
+    "borrow": 2943.44996992,
     "threshold": 80,
     "ltv": 77,
-    "healthFactor": "1.717621465470736762"
+    "healthFactor": "1.746677570721214555"
   },
   "0x666eeDF593D66a3dF42A484C0D337e2E484bAA9A": {
     "address": "0x666eeDF593D66a3dF42A484C0D337e2E484bAA9A",
