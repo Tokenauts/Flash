@@ -269,34 +269,43 @@ const rewriteWatchlist = async () => {
 const updateWatchlistData = async () => {
   // 1. Read the addresses from watchlist.json
   const watchlistData = WL;
+  const retryInterval = 60000; // 1 minute in milliseconds
 
   // 2. Fetch user account data for each address using the contract method
-  for (const address in watchlistData) {
-    if (watchlistData.hasOwnProperty(address)) {
-      try {
-        const userData = await contract.methods
-          .getUserAccountData(address)
-          .call();
+  for (let i = 0; i < Object.keys(watchlistData).length; i++) {
+    const address = Object.keys(watchlistData)[i];
 
-        const updatedData = {
-          address: address,
-          collateral:
-            web3.utils.fromWei(userData.totalCollateralBase, "wei") / 10 ** 8,
-          debt: web3.utils.fromWei(userData.totalDebtBase, "wei") / 10 ** 8,
-          borrow:
-            web3.utils.fromWei(userData.availableBorrowsBase, "wei") / 10 ** 8,
-          threshold:
-            web3.utils.fromWei(userData.currentLiquidationThreshold, "wei") /
-            10 ** 2,
-          ltv: web3.utils.fromWei(userData.ltv, "wei") / 10 ** 2,
-          healthFactor: web3.utils.fromWei(userData.healthFactor, "ether"),
-        };
-        console.log(updatedData);
-        // Update watchlist data with new data
-        updateJSONFile("./watchlist.json", address, updatedData);
-      } catch (error) {
-        console.error(`Error fetching data for address ${address}:`, error);
-      }
+    try {
+      const userData = await contract.methods
+        .getUserAccountData(address)
+        .call();
+
+      const updatedData = {
+        address: address,
+        collateral:
+          web3.utils.fromWei(userData.totalCollateralBase, "wei") / 10 ** 8,
+        debt: web3.utils.fromWei(userData.totalDebtBase, "wei") / 10 ** 8,
+        borrow:
+          web3.utils.fromWei(userData.availableBorrowsBase, "wei") / 10 ** 8,
+        threshold:
+          web3.utils.fromWei(userData.currentLiquidationThreshold, "wei") /
+          10 ** 2,
+        ltv: web3.utils.fromWei(userData.ltv, "wei") / 10 ** 2,
+        healthFactor: web3.utils.fromWei(userData.healthFactor, "ether"),
+      };
+
+      console.log(updatedData);
+      // Update watchlist data with new data
+      updateJSONFile("./watchlist.json", address, updatedData);
+    } catch (error) {
+      console.error(`Error fetching data for address ${address}:`, error);
+
+      // Wait for 1 minute and retry the same address
+      console.log(
+        `Waiting for ${retryInterval / 1000} seconds before retrying...`
+      );
+      await new Promise((resolve) => setTimeout(resolve, retryInterval));
+      i--; // Decrement index to retry the same address
     }
   }
 };
@@ -389,4 +398,3 @@ app.get("/userSummary", async (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
-module.exports = app;
